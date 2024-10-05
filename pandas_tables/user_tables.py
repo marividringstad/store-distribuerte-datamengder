@@ -18,3 +18,8 @@ users_pandas = pd.DataFrame({
 
 # Display the DataFrame
 print(users_pandas)
+
+true_count = users_pandas['has_labels'].sum()
+
+# Display the count
+print(f"Number of True values: {true_count}")
