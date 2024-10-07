@@ -21,5 +21,11 @@ users_pandas = pd.DataFrame({
 
 true_count = users_pandas['has_labels'].sum()
 
-# Display the count
-#print(f"Number of True values: {true_count}")
+# Define the path where you want to save the CSV file
+csv_output_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
+
+
+# Save the DataFrame to a CSV file
+users_pandas.to_csv(csv_output_path, index=False)
+
+print(f"Data successfully saved to {csv_output_path}")
