@@ -28,6 +28,10 @@ for index, activity_row in activity_pandas.iterrows():
     # Build the path to the .plt file
     plt_path = os.path.join(base_path, user_id, "Trajectory", plt_file)
     
+    #get start and end date time for activity
+    start_time = pd.to_datetime(activity_row['start_date_time'])
+    end_time = pd.to_datetime(activity_row['end_date_time'])
+    
     if os.path.exists(plt_path):
         # Open the .plt file and read the trackpoint data
         with open(plt_path, 'r') as file:
@@ -47,7 +51,8 @@ for index, activity_row in activity_pandas.iterrows():
                 date_time_str = f"{trackpoint_data[5]} {trackpoint_data[6]}"
                 date_time = pd.to_datetime(date_time_str)
                 
-                new_trackpoint = pd.DataFrame({
+                if start_time <= date_time <= end_time:
+                    new_trackpoint = pd.DataFrame({
                     'id': [unique_id_counter],
                     'activity_id': [activity_id],
                     'lat': [lat],
