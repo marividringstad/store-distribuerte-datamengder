@@ -1,8 +1,11 @@
 import pandas as pd
-from DbConnector import DbConnector
 import mysql.connector
+import sys
+import os
 
-from pandas_tables.trackpoints_tables import trackpoint_pandas
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from DbConnector import DbConnector
 
 # Define the path to your CSV file
 csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
@@ -10,7 +13,10 @@ csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tab
 # Read the CSV file into a pandas DataFrame
 trackpoint_pandas = pd.read_csv(csv_file_path)
 
-def insert_users(trackpoint_pandas):
+# Convert 'start_date_time' and 'end_date_time' to datetime objects
+trackpoint_pandas['date_time'] = pd.to_datetime(trackpoint_pandas['date_time'])
+
+def insert_trackpoints(trackpoint_pandas):
     db = DbConnector()  # Establish a connection to the database
     cursor = db.cursor
     
@@ -38,4 +44,4 @@ def insert_users(trackpoint_pandas):
     db.close()  # Close the connection
 
 # Call the function to insert users
-insert_users(trackpoint_pandas)
+insert_trackpoints(trackpoint_pandas)
