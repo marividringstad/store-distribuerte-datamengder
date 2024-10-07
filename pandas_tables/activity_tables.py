@@ -23,6 +23,18 @@ def parse_datetime_from_label(date_str, time_str):
     formatted_date_str = date_str.replace('/', '-')  # Convert to 'YYYY-MM-DD'
     return datetime.strptime(f"{formatted_date_str} {time_str}", "%Y-%m-%d %H:%M:%S")
 
+
+def get_all_times_plt(trackpoints): #tar in valid_lines
+    all_date_times =[]
+    for i in range(len(trackpoints)):
+        trackpoint = trackpoints[i].strip().split(',')
+        date = trackpoint[5]
+        time = trackpoint[6]
+        date_time = f"{date} {time}"
+        trackpoint_start_datetime = datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S')
+        all_date_times.append(trackpoint_start_datetime)
+    return all_date_times
+
 print("Starting to process activities...")
 
 # Iterate over the user_ids
@@ -31,7 +43,20 @@ for user_id in user_ids:
     
     # Build the path to the user's Trajectory folder
     user_trajectory_path = os.path.join(base_path, user_id, "Trajectory")
+    # Path to the user's labels.txt file
     
+    labels =[]
+
+    #hent labels hvis bruker har labels
+    if not users_pandas[(users_pandas['id'] == user_id) & (users_pandas['has_labels'] == True)].empty:  
+        user_labels_path = os.path.join(base_path, user_id, "labels.txt")           
+        if os.path.exists(user_labels_path):
+            print(f"Processing labels.txt for user {user_id}...")
+
+            # Read the labels.txt file
+            with open(user_labels_path, 'r') as label_file:
+                labels = label_file.readlines()
+
     # Ensure the folder exists
     if os.path.exists(user_trajectory_path):
         # List all .plt files in the Trajectory folder and sort them
@@ -72,36 +97,25 @@ for user_id in user_ids:
                         transportation_mode = 'NULL'  # Default
 
                         # Check if the user has labels
-                        if not users_pandas[(users_pandas['id'] == user_id) & (users_pandas['has_labels'] == True)].empty:
-                            # Path to the user's labels.txt file
-                            user_labels_path = os.path.join(base_path, user_id, "labels.txt")
-                            
-                            if os.path.exists(user_labels_path):
-                                print(f"Processing labels.txt for user {user_id}...")
+                        if len(labels) >= 0.5:
+                            all_date_times = get_all_times_plt(valid_lines) #legg valid lines rett inn
 
-                                # Read the labels.txt file
-                                with open(user_labels_path, 'r') as label_file:
-                                    labels = label_file.readlines()
+                            # Process each label entry (skip the header)
+                            for label in labels[1:]:
+                                label_data = label.strip().split()
 
-                                # Process each label entry (skip the header)
-                                for label in labels[1:]:
-                                    label_data = label.strip().split()
+                                # Parse start and end times from the label
+                                label_start_time = parse_datetime_from_label(label_data[0], label_data[1])
+                                label_end_time = parse_datetime_from_label(label_data[2], label_data[3])
+                                label_transportation_mode = label_data[4]
 
-                                    # Parse start and end times from the label
-                                    label_start_time = parse_datetime_from_label(label_data[0], label_data[1])
-                                    label_end_time = parse_datetime_from_label(label_data[2], label_data[3])
-                                    label_transportation_mode = label_data[4]
 
-                                    # Convert plt file times to datetime objects
-                                    plt_start_datetime = datetime.strptime(start_date_time, '%Y-%m-%d %H:%M:%S')
-                                    plt_end_datetime = datetime.strptime(end_date_time, '%Y-%m-%d %H:%M:%S')
-
-                                    # Check if times match exactly or overlap
-                                    if label_start_time <= plt_start_datetime <= label_end_time or label_start_time <= plt_end_datetime <= label_end_time:
-                                        transportation_mode = label_transportation_mode
-                                        start_date_time = label_start_time
-                                        end_date_time = label_end_time
-                                        break  # Use the first matching label
+                                # Check if times match exactly or overlap
+                                if label_start_time in all_date_times  and label_end_time in all_date_times:
+                                    transportation_mode = label_transportation_mode
+                                    start_date_time = label_start_time
+                                    end_date_time = label_end_time
+                                    break  # Use the first matching label
 
                         # Create a new row as a DataFrame
                         new_row = pd.DataFrame({
