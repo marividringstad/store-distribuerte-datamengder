@@ -10,13 +10,13 @@ import sys
 from user_tables import users_pandas
 
 # Initialize an empty DataFrame to store the activity data
-activity_pandas = pd.DataFrame(columns=['id', 'user_id', 'transportation_mode', 'start_date_time', 'end_date_time'])
+activity_pandas = pd.DataFrame(columns=['id', 'user_id', 'transportation_mode', 'start_date_time', 'end_date_time', 'plt_file_name'])
 
 # Create the list of user IDs from 000 to 181
-user_ids = [f'{i:03}' for i in range(182)]
+user_ids = [f'{i:03}' for i in range(1)]
 
 # Define the base path to the dataset (adjust this to your actual dataset path)
-base_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/dataset/dataset/Data"
+base_path = "/Users/eriksundstrom/store-distribuerte-datamengder/dataset/dataset/Data"
 
 # Initialize a unique id counter for activity_pandas 'id' field
 unique_id_counter = 1
@@ -87,7 +87,8 @@ for user_id in user_ids:
                             'user_id': [user_id],
                             'transportation_mode': ['NULL'],  # Set to NULL initially; we'll update this later
                             'start_date_time': [start_date_time],
-                            'end_date_time': [end_date_time]
+                            'end_date_time': [end_date_time],
+                            'plt_file_name': [plt_file] 
                         })
 
                         # Append the new row to activity_pandas using pd.concat()
@@ -145,7 +146,7 @@ print("Finished processing. First 20 rows of activity_pandas:")
 print(tabulate(activity_pandas.head(20), headers='keys', tablefmt='psql'))
 
 # Define the path where you want to save the CSV file
-csv_output_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
+csv_output_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
 
 # Save the DataFrame to a CSV file
 activity_pandas.to_csv(csv_output_path, index=False)

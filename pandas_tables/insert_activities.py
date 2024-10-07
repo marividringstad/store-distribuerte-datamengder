@@ -1,9 +1,16 @@
+import pandas as pd
 from DbConnector import DbConnector
 import mysql.connector
 
 from pandas_tables.activity_tables import activity_pandas
 
-def insert_users(users_pandas):
+# Define the path to your CSV file
+csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
+
+# Read the CSV file into a pandas DataFrame
+activity_pandas = pd.read_csv(csv_file_path)
+
+def insert_users(activity_pandas):
     db = DbConnector()  # Establish a connection to the database
     cursor = db.cursor
     
@@ -14,7 +21,7 @@ def insert_users(users_pandas):
     """  # Using ON DUPLICATE KEY to avoid inserting duplicate users
     
     # Iterate over the users DataFrame and insert each user into the database
-    for index, row in users_pandas.iterrows():
+    for index, row in activity_pandas.iterrows():
         id = row['id']
         user_id = row['user_id']
         transportation_mode = row['transportation_mode']
