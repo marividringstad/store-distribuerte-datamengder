@@ -7,7 +7,7 @@ from datetime import datetime
 from user_tables import users_pandas
 
 # Initialize an empty DataFrame to store the activity data
-activity_pandas = pd.DataFrame(columns=['id', 'user_id', 'transportation_mode', 'start_date_time', 'end_date_time'])
+activity_pandas = pd.DataFrame(columns=['id', 'user_id', 'transportation_mode', 'start_date_time', 'end_date_time', 'plt_file_name'])
 
 # Create the list of user IDs from 000 to 181
 user_ids = [f'{i:03}' for i in range(182)]
@@ -68,6 +68,7 @@ for user_id in user_ids:
         for plt_file in plt_files:
             plt_path = os.path.join(user_trajectory_path, plt_file)
 
+
             print(f"Processing file: {plt_file}")
             
             # Open the .plt file and read its contents
@@ -123,7 +124,8 @@ for user_id in user_ids:
                             'user_id': [user_id],
                             'transportation_mode': [transportation_mode],
                             'start_date_time': [start_date_time],
-                            'end_date_time': [end_date_time]
+                            'end_date_time': [end_date_time],
+                            'plt_file_name': [plt_file]
                         })
                         # Append the new row to activity_pandas using pd.concat()
                         activity_pandas = pd.concat([activity_pandas, new_row], ignore_index=True)
