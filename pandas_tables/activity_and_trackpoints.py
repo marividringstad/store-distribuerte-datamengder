@@ -2,46 +2,45 @@ import pandas as pd
 import os
 from tabulate import tabulate
 from datetime import datetime
+from user_tables import users_pandas 
 
+#TODO: run code, if all ok, Check all 'OLD' comments and delete
 
-#Most revent trackpoint table 
-#TODO: add trackpoints_list = [] outside the user loop to make a general list that is written into a pandas fram
-#TODO: do the same for activities
+#get user ids from user-table
+user_ids =users_pandas[0]
 
-# Import your DataFrame containing user info
-from user_tables import users_pandas
+#path that ends with "/store-distribuerte-datamengder/" --- TODO: change this so patch matches your path
+base_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/" 
 
-# Initialize an empty DataFrame to store the activity data
-
-
-# Create the list of user IDs from 000 to 181
-user_ids = [f'{i:03}' for i in range(182)]
-#user_ids = ['045','046']
-
-# Define the base path to the dataset (adjust this to your actual dataset path)
-base_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/dataset/dataset/Data"
+#path for dataset
+dataset_path = f"{base_path}dataset/dataset/Data"
 
 # Initialize a unique id counter for activity_pandas 'id' field
-unique_id_counter = 1
+unique_id_activity = 1
 unique_id_trackpoints = 1
 
-# Helper function to parse date and time from the labels (YYYY/MM/DD format)
-def parse_datetime_from_label(date_str, time_str):
-    formatted_date_str = date_str.replace('/', '-')  # Convert to 'YYYY-MM-DD'
+#parse date and time on 'YYYY/MM/DD' to '%Y-%m-%d %H:%M:%S'
+def parse_datetime(date_str, time_str):
+    formatted_date_str = date_str.replace('/', '-')  #convert to 'YYYY-MM-DD'
     return datetime.strptime(f"{formatted_date_str} {time_str}", "%Y-%m-%d %H:%M:%S")
 
+#get all date and times from all trackpoints in an activity
+def get_all_times_plt(trackpoints_from_plt): #takes trackpoints trackpoints in activity -- skips header
+    all_date_times =[] #empty list where all times are to be added
+    for i in range(len(trackpoints_from_plt)):
+        trackpoint = trackpoints_from_plt[i].strip().split(',') #slip on, to get each element of the trackpoint
 
-def get_all_times_plt(trackpoints): #tar in valid_lines
-    all_date_times =[]
-    for i in range(len(trackpoints)):
-        trackpoint = trackpoints[i].strip().split(',')
-        date = trackpoint[5]
+        #get date time on correct format
+        date = trackpoint[5] 
         time = trackpoint[6]
         date_time = f"{date} {time}"
         trackpoint_start_datetime = datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S')
-        all_date_times.append(trackpoint_start_datetime)
-    return all_date_times
 
+        #add date and time for trackpoint to list
+        all_date_times.append(trackpoint_start_datetime)
+    return all_date_times #list of all date and times of the activity
+
+#get all info for a trackpoint
 def get_trackponit_info(trackpoint):
     lat = float(trackpoint[0])
     lon = float(trackpoint[1])
@@ -49,140 +48,150 @@ def get_trackponit_info(trackpoint):
     date_days = trackpoint[4]
     date = trackpoint[5]
     time = trackpoint[6]
-    #format now looks like this: [datetime.datetime(2009, 1, 15, 22, 1, 45)], needs to be changed
-    date_time_trackpoint = parse_datetime_from_label(date, time)
-    return lat, lon, altitude, date_days, date_time_trackpoint
+    #get date and time to correct format
+    date_time_trackpoint = parse_datetime(date, time)
+    return lat, lon, altitude, date_days, date_time_trackpoint #return all data relevant for database
 
 print("Starting to process activities...")
 
+#base list where all activities and trackpoints are stored before exported to pandas dataframes
 activity_list_all = []
 trackpoints_list_all =[]
 
-# Iterate over the user_ids
+#iterate over all users
 for user_id in user_ids:
-    trackpoints_list =[]
+
     print(f"Processing user {user_id}...")
     
-    # Build the path to the user's Trajectory folder
-    user_trajectory_path = os.path.join(base_path, user_id, "Trajectory")
-    # Path to the user's labels.txt file
+    #path to the user's Trajectory folder
+    user_trajectory_path = os.path.join(dataset_path, user_id, "Trajectory")
     
+    #all labels for this user. If the user is has not used labels, this will remain empty
     labels =[]
 
-    #hent labels hvis bruker har labels
-    if not users_pandas[(users_pandas['id'] == user_id) & (users_pandas['has_labels'] == True)].empty:  
-        user_labels_path = os.path.join(base_path, user_id, "labels.txt")           
-        if os.path.exists(user_labels_path):
-            print(f"Processing labels.txt for user {user_id}...")
+    #get labels if user has labels
+    if not users_pandas[(users_pandas['id'] == user_id) & (users_pandas['has_labels'] == True)].empty:  #if the user with the id has labels
+        
+        #path to the .txt-file with all the labels for this user
+        user_labels_path = os.path.join(dataset_path, user_id, "labels.txt")   
+        print(f"Processing labels.txt for user {user_id}...")
 
-            # Read the labels.txt file
-            with open(user_labels_path, 'r') as label_file:
-                labels = label_file.readlines()
+        #read .txt file and get all labels 
+        with open(user_labels_path, 'r') as label_file:
+            labels = label_file.readlines()
 
-    # Ensure the folder exists
+    #if this user has any activities 
     if os.path.exists(user_trajectory_path):
-        # List all .plt files in the Trajectory folder and sort them
-        plt_files = sorted([f for f in os.listdir(user_trajectory_path) if f.endswith('.plt')])
 
+        #list all .plt files sorted
+        plt_files = sorted([f for f in os.listdir(user_trajectory_path) if f.endswith('.plt')])
         print(f"Found {len(plt_files)} .plt files for user {user_id}")
 
-        # Iterate over the sorted .plt files
+        #iterate over .plt files
         for plt_file in plt_files:
             plt_path = os.path.join(user_trajectory_path, plt_file)
 
-
             print(f"Processing file: {plt_file}")
             
-            # Open the .plt file and read its contents
+            #read file and store row in list
             with open(plt_path, 'r') as file:
                 lines = file.readlines()
 
-                # Ignore the first 6 lines (based on the PLT format specification)
-                valid_lines = lines[6:]
+                #ignore first 6 lines as these are irrelevant
+                trackpoints = lines[6:]
 
-                # Only process the file if it has 2500 or fewer valid lines
-                if len(valid_lines) <= 2500:
-                    if valid_lines:
-                        # Extract the first and last valid data lines
-                        first_line = valid_lines[0].strip().split(',')
-                        last_line = valid_lines[-1].strip().split(',')
+                #check if there are less than or exactly 2500 trackpoints
+                if len(trackpoints) <= 2500:
+                    if trackpoints:
 
-                        # Extract start date and time from the first valid line
-                        start_date = first_line[5]
-                        start_time = first_line[6]
+                        #get first and last trackpoint
+                        first_trackpoint = trackpoints[0].strip().split(',')
+                        last_trackpoint = trackpoints[-1].strip().split(',')
+
+                        #get start date and time from first trackpoint
+                        start_date = first_trackpoint[5]
+                        start_time = first_trackpoint[6]
                         start_date_time = f"{start_date} {start_time}"
 
-                        # Extract end date and time from the last valid line
-                        end_date = last_line[5]
-                        end_time = last_line[6]
+                        #get end date and time from last trackpoint
+                        end_date = last_trackpoint[5]
+                        end_time = last_trackpoint[6]
                         end_date_time = f"{end_date} {end_time}"
 
-                        transportation_mode = 'NULL'  # Default
+                        #default transportation mode
+                        transportation_mode = 'NULL'  
 
-                        # Check if the user has labels
-                        if len(labels) >= 0.5:
-                            all_date_times = get_all_times_plt(valid_lines) #legg valid lines rett inn
+                        #if the user has labels, start and end time might not be first and last trackpoint. Check this and update transportation mode
+                        if len(labels) >= 0.5: #if the list of labels is longer than 0.5, the user has labels
 
-                            # Process each label entry (skip the header)
-                            for label in labels[1:]:
+                            #get all date and times for all trackpoints in this activity
+                            all_date_times = get_all_times_plt(trackpoints)
+
+                            #iterate over each label
+                            for label in labels[1:]: #skip header
                                 label_data = label.strip().split()
 
-                                # Parse start and end times from the label
-                                label_start_time = parse_datetime_from_label(label_data[0], label_data[1])
-                                label_end_time = parse_datetime_from_label(label_data[2], label_data[3])
+                                #parse start and end time for label
+                                date_start_label = label_data[0]
+                                time_start_label = label_data[1]
+                                label_start_time = parse_datetime(date_start_label, time_start_label)
+                                
+                                date_end_label = label_data[2]
+                                time_end_label = label_data[3]
+                                label_end_time = parse_datetime(date_end_label, time_end_label)
                                 label_transportation_mode = label_data[4]
 
 
-                                # Check if times match exactly or overlap
+                                #find exact matches in start time and labels
                                 if label_start_time in all_date_times  and label_end_time in all_date_times:
+
+                                    #update start and end time, and transportation mdoe
                                     transportation_mode = label_transportation_mode
                                     start_date_time = label_start_time
                                     end_date_time = label_end_time
 
-                                    #oppdatere valid lines
+                                    #oppdate valid trackpoints for the activity
                                     start_time_index= all_date_times.index(label_start_time)
                                     end_time_index= all_date_times.index(label_end_time)
-                                    valid_lines = valid_lines[start_time_index : end_time_index]
-                                    break  # Use the first matching label
+                                    trackpoints = trackpoints[start_time_index : end_time_index] #update valid trackpoints for the activity
+                                    break 
 
-                        # Create a new row as a DataFrame
+                        #create new activity as dictionary to be added into list of all activities
                         new_activity = {
-                            'id': unique_id_counter,
+                            'id': unique_id_activity,
                             'user_id': user_id,
                             'transportation_mode': transportation_mode,
                             'start_date_time': start_date_time,
                             'end_date_time': end_date_time
                         }
-                        # Append the new row to activity_pandas using pd.concat()
                         activity_list_all.append(new_activity)
-                        # Increment the unique ID counter for the next activity
-                        
-                        
-
                         print(f"Added activity for user {user_id} from {start_date_time} to {end_date_time}")   
 
-                        #Legge til trajectory
-                        #oppdatere valid lines slik at det bare er linjene som er innenfor start og slutt som er med 
-                        for i in range(len(valid_lines)):
-                            trackpoint = valid_lines[i].strip().split(',')
-                            lat, lon, altitude, date_days, date_time_trackpoint = get_trackponit_info(trackpoint)
+                 
+                        #iterate over all valid trackpoints for this activity
+                        for i in range(len(trackpoints)):
 
+                            #get all info for each trackpoint in trackpoints
+                            trackpoint = trackpoints[i].strip().split(',')
+                            lat, lon, altitude, date_days, date_time_trackpoint = get_trackponit_info(trackpoint)
+                            
+                            #create new trackpoint as dictionary to be added to list of all trackpoints
                             new_trackpoint = {
                                 'id': int(unique_id_trackpoints),
-                                'activity_id': int(unique_id_counter),
+                                'activity_id': int(unique_id_activity),
                                 'lat': float(lat),
                                 'lon': float(lon),
                                 'altitude':float(altitude),
                                 'date_days': date_days, #sjekk denne
                                 'date_time': date_time_trackpoint
-                            }   
-                            
+                            }  
                             trackpoints_list_all.append(new_trackpoint)
                             
-                        
+                            #increment id for trackpoint
                             unique_id_trackpoints +=1
-                            
-                        unique_id_counter += 1     
+
+                        #increment id for activity   
+                        unique_id_activity += 1     
                 else:
                     print(f"Skipped file {plt_file} for user {user_id} as it has more than 2500 valid lines")
 
@@ -190,40 +199,28 @@ for user_id in user_ids:
     
     print(f"Added all trackpoint for user {user_id} for all activities") 
     
-#activity_pandas = pd.DataFrame(columns=['id', 'user_id', 'transportation_mode', 'start_date_time', 'end_date_time', 'plt_file_name'])
-#trackpoint_pandas = pd.DataFrame(columns=['id', 'activity_id', 'lat', 'lon', 'altitude', 'date_days', 'date_time'])
 
+#make dataframes of the two lists with all activities and trackpoints
 activity_pandas = pd.DataFrame(activity_list_all)
-#activity_pandas = pd.concat([activity_pandas, activity_list], ignore_index=True)
-
 trackpoint_pandas = pd.DataFrame(trackpoints_list_all)
-#trackpoint_pandas = pd.concat([trackpoint_pandas, trackpoint_pandas_list], ignore_index=True)
 
 
-# Ensure that all dates in the final DataFrame are in the correct format (with -)
+#update format of date and time to ensure they are correct format
 activity_pandas['start_date_time'] = pd.to_datetime(activity_pandas['start_date_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
 activity_pandas['end_date_time'] = pd.to_datetime(activity_pandas['end_date_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
 trackpoint_pandas['date_time'] = pd.to_datetime(trackpoint_pandas['date_time']).dt.strftime('%Y-%m-%d %H:%M:%S')
 
-# Print how many rows have been added to the table
-print(f"Total number of rows in activity_pandas: {len(activity_pandas)}")
-
-print("Finished processing. First 20 rows of activity_pandas:")
-# Print the first 20 rows using tabulate
-print(tabulate(activity_pandas.head(20), headers='keys', tablefmt='psql'))
-print(tabulate(trackpoint_pandas.head(20), headers='keys', tablefmt='psql'))
-
 # Define the path where you want to save the CSV file
-csv_output_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/activity_final.csv"
+csv_activity_path = f"{base_path}cleaned_tables/activity_final.csv"
 
 # Save the DataFrame to a CSV file
-activity_pandas.to_csv(csv_output_path, index=False)
+activity_pandas.to_csv(csv_activity_path, index=False)
 
 # Define the path where you want to save the CSV file
-csv_output_path_track = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/trackpoints_final.csv"
+csv_trackpoint_path = f"{base_path}cleaned_tables/trackpoints_final.csv"
 
 # Save the DataFrame to a CSV file
-trackpoint_pandas.to_csv(csv_output_path_track, index=False)
+trackpoint_pandas.to_csv(csv_trackpoint_path, index=False)
 
-print(f"Data successfully saved to {csv_output_path}")
-print(f"Data successfully saved to {csv_output_path_track}")
+print(f"Data successfully saved to {csv_activity_path}")
+print(f"Data successfully saved to {csv_trackpoint_path}")
