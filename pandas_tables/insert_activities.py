@@ -8,7 +8,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from DbConnector import DbConnector
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-from pandas_tables.activity_tables import activity_pandas
+from pandas_tables.activity_and_trackpoints import activity_pandas
 # Define the path to your CSV file
 #csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
 

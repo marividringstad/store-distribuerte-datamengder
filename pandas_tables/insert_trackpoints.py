@@ -7,7 +7,7 @@ import os
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from DbConnector import DbConnector
-from pandas_tables.trackpoints_tables import trackpoint_pandas
+from pandas_tables.activity_and_trackpoints import trackpoint_pandas
 # Define the path to your CSV file
 #csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
 #logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
