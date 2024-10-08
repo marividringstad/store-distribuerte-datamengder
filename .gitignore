@@ -9,3 +9,6 @@ venv/
 *.plt.icloud
 *.plt
 *.icloud
+
+#ignore all writings to csv as these files are huge
+*.csv
