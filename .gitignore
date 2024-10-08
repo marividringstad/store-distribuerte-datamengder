@@ -7,3 +7,5 @@ venv/
 
 #ignore changes from .plt to .plt.icloud
 *.plt.icloud
+*.plt
+*.icloud
