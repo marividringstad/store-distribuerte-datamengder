@@ -7,17 +7,17 @@ from user_tables import users_pandas
 #TODO: run code, if all ok, Check all 'OLD' comments and delete
 
 #get user ids from user-table
-user_ids =users_pandas[0]
+user_ids =users_pandas['id']
 
 #path that ends with "/store-distribuerte-datamengder/" --- TODO: change this so patch matches your path
-base_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/" 
+base_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/" 
 
 #path for dataset
 dataset_path = f"{base_path}dataset/dataset/Data"
 
-# Initialize a unique id counter for activity_pandas 'id' field
-unique_id_activity = 1
-unique_id_trackpoints = 1
+#counter for id for activity and trackpoints
+unique_id_activity = 0
+unique_id_trackpoints = 0
 
 #parse date and time on 'YYYY/MM/DD' to '%Y-%m-%d %H:%M:%S'
 def parse_datetime(date_str, time_str):
