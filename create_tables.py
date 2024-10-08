@@ -4,7 +4,7 @@ def create_tables():
     db = DbConnector()
     cursor = db.cursor
 
-    # SQL to create User table
+    #create user table
     create_user_table = """
     CREATE TABLE IF NOT EXISTS User (
         id VARCHAR(50) PRIMARY KEY,
@@ -12,7 +12,7 @@ def create_tables():
     );
     """
     
-    # SQL to create Activity table
+    #create activity table
     create_activity_table = """
     CREATE TABLE IF NOT EXISTS Activity (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -24,7 +24,7 @@ def create_tables():
     );
     """
     
-    # SQL to create TrackPoint table
+    #create trackpoints table
     create_trackpoint_table = """
     CREATE TABLE IF NOT EXISTS TrackPoint (
         id INT PRIMARY KEY AUTO_INCREMENT,
