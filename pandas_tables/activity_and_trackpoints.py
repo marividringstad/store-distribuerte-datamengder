@@ -4,7 +4,6 @@ from tabulate import tabulate
 from datetime import datetime
 from user_tables import users_pandas 
 
-#TODO: run code, if all ok, Check all 'OLD' comments and delete
 
 #get user ids from user-table
 user_ids =users_pandas['id']
@@ -45,7 +44,7 @@ def get_trackponit_info(trackpoint):
     lat = float(trackpoint[0])
     lon = float(trackpoint[1])
     altitude = trackpoint[3]
-    date_days = trackpoint[4]
+    date_days = float(trackpoint[4])
     date = trackpoint[5]
     time = trackpoint[6]
     #get date and time to correct format
@@ -177,13 +176,13 @@ for user_id in user_ids:
 
                             #checks for data
                             if lon not in [-180,180]:
-                                lon = None
+                                lon = 'NaN'
                             if lat not in [-90,90]:
-                                lat = None
-                            if altitude not in [-100, 29029]:
-                                altitude = None
+                                lat = 'NaN'
+                            if altitude not in [-100, 29029]: #not higher than mt.everest
+                                altitude = 'NaN'
                             if date_days <= 0:
-                                date_days= None
+                                date_days= 'NaN'
 
                             new_trackpoint = {
                                 'id': int(unique_id_trackpoints),

@@ -17,7 +17,8 @@ from pandas_tables.activity_and_trackpoints import trackpoint_pandas
 
 # Convert 'start_date_time' and 'end_date_time' to datetime objects
 #trackpoint_pandas['date_time'] = pd.to_datetime(trackpoint_pandas['date_time'])
-def insert_trackpoints(trackpoint_pandas, batch_size):
+start_trackpoints = trackpoint_pandas[:200000]
+def insert_trackpoints(start_trackpoints, batch_size):
     db = None
     try:
         db = DbConnector()  # Establish a connection to the database
@@ -32,7 +33,7 @@ def insert_trackpoints(trackpoint_pandas, batch_size):
         total_inserted = 0
         
         # Iterate over the trackpoints DataFrame and insert each trackpoint into the database
-        for index, row in trackpoint_pandas.iterrows():
+        for index, row in start_trackpoints.iterrows():
             print(row)
             data.append((
                 #row['id'],
@@ -69,4 +70,4 @@ def insert_trackpoints(trackpoint_pandas, batch_size):
             db.close()  # Close the database connection
     print(f"Total trackpoints inserted: {total_inserted}")
 
-insert_trackpoints(trackpoint_pandas, batch_size=1000)
+insert_trackpoints(start_trackpoints, batch_size=1000)

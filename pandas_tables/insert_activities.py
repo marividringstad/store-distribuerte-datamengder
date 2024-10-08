@@ -27,8 +27,8 @@ def insert_activities(activity_pandas, batch_size):
         
         # Prepare the SQL insert query
         query = """
-        INSERT INTO Activity (id, user_id, transportation_mode, start_date_time, end_date_time)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO Activity (user_id, transportation_mode, start_date_time, end_date_time)
+        VALUES (%s, %s, %s, %s)
         """  # Using ON DUPLICATE KEY to avoid inserting duplicate users
         
         data = []
@@ -37,7 +37,7 @@ def insert_activities(activity_pandas, batch_size):
         # Iterate over the users DataFrame and insert each user into the database
         for index, row in activity_pandas.iterrows():
             data.append((
-                row['id'],
+                #row['id'],
                 row['user_id'],
                 row['transportation_mode'],
                 row['start_date_time'],
