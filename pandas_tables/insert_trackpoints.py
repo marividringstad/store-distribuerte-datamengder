@@ -25,7 +25,7 @@ def insert_trackpoints(trackpoint_pandas, batch_size):
         
         # Prepare the SQL insert query
         query = """
-        INSERT INTO TrackPoint (id, activity_id, lat, lon, altitude, date_days, date_time)
+        INSERT INTO TrackPoint (activity_id, lat, lon, altitude, date_days, date_time)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         data = []
@@ -35,13 +35,13 @@ def insert_trackpoints(trackpoint_pandas, batch_size):
         for index, row in trackpoint_pandas.iterrows():
             print(row)
             data.append((
-                row['id'],
+                #row['id'],
                 row['activity_id'],
                 row['lat'],
                 row['lon'],
                 row['altitude'],
                 row['date_days'],
-                row['date_time'].to_pydatetime()  # Already a datetime object
+                row['date_time']
             ))
             
             if len(data) == batch_size:
