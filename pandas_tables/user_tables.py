@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Step 1: Read the contents of labeled_id.txt from your provided file path
-file_path = '/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
+file_path = '/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
 
 with open(file_path, 'r') as file:
     labeled_ids = set(line.strip() for line in file)
@@ -22,7 +22,7 @@ users_pandas = pd.DataFrame({
 true_count = users_pandas['has_labels'].sum()
 
 # Define the path where you want to save the CSV file
-csv_output_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
+csv_output_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
 
 
 # Save the DataFrame to a CSV file
