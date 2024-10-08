@@ -1,31 +1,27 @@
 import pandas as pd
 
-# Step 1: Read the contents of labeled_id.txt from your provided file path
+#file path for .txt with ids for users with labels
 file_path = '/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
 
+#open file and create set of users with labels
 with open(file_path, 'r') as file:
     labeled_ids = set(line.strip() for line in file)
 
-# Step 2: Create a DataFrame
-numbers = [f'{i:03}' for i in range(182)]  # Strings from 0 to 181
-boolean_values = [f'{i:03}' in labeled_ids for i in range(182)]  # True if number in labeled_ids, else False
+#all ids of users as string on the format 'XXX'
+ids = [f'{i:03}' for i in range(182)]
+has_labels = [f'{i:03}' in labeled_ids for i in range(182)]  #true if id in labeled_ids, else false
 
-# Step 3: Create a pandas DataFrame
+#create dataframe
 users_pandas = pd.DataFrame({
-    'id': numbers,
-    'has_labels': boolean_values
+    'id': ids,
+    'has_labels': has_labels
 })
 
-# Display the DataFrame
-#print(users_pandas)
-
-true_count = users_pandas['has_labels'].sum()
-
-# Define the path where you want to save the CSV file
+#path for csv file
 csv_output_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
 
 
-# Save the DataFrame to a CSV file
+#write dataframe to csv
 users_pandas.to_csv(csv_output_path, index=False)
 
 print(f"Data successfully saved to {csv_output_path}")
