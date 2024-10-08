@@ -175,16 +175,16 @@ for user_id in user_ids:
                             trackpoint = trackpoints[i].strip().split(',')
                             lat, lon, altitude, date_days, date_time_trackpoint = get_trackponit_info(trackpoint)
 
-                            #TODO: data-checks
-                            ##do some checks for the data of the trackpoint
-                            # valid lat and lon?
-                            #are any values missing?
-                            # are any values -777 or other unreasonable values for altitude?
-                            #date_days are all positive??
-                            #does date_time and date_days match??
-                            #add ways to handle this information errors!!1 --  set value as None or only keep one
-                            
-                            #create new trackpoint as dictionary to be added to list of all trackpoints
+                            #checks for data
+                            if lon not in [-180,180]:
+                                lon = None
+                            if lat not in [-90,90]:
+                                lat = None
+                            if altitude not in [-100, 29029]:
+                                altitude = None
+                            if date_days <= 0:
+                                date_days= None
+
                             new_trackpoint = {
                                 'id': int(unique_id_trackpoints),
                                 'activity_id': int(unique_id_activity),
