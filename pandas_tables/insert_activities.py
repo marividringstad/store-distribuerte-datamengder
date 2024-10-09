@@ -15,7 +15,7 @@ def get_table_from_csv(username):
     if username.lower() == 'erik':
         csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
     if username.lower() == 'mari':
-        csv_file_path = "/Users/marividringstad/store-distribuerte-datamengder/cleaned_tables/activity_data.csv" #TODO: mari sjekk at denne er riktig
+        csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
     if username.lower() == 'tine':
         csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
     
