@@ -8,8 +8,22 @@ from user_tables import users_pandas
 #get user ids from user-table
 user_ids =users_pandas['id']
 
-#path that ends with "/store-distribuerte-datamengder/" --- TODO: change this so patch matches your path
-base_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/" 
+def get_base_path(username):
+
+    #get correct path
+    if username.lower() == 'erik':
+        path = "/Users/eriksundstrom/store-distribuerte-datamengder/"
+    if username.lower() == 'mari':
+        path = "/Users/marividringstad/store-distribuerte-datamengder/" #TODO: mari sjekk at denne er riktig
+    if username.lower() == 'tine':
+        path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/"
+
+    return path
+
+username = input("Who is running this code?")
+
+#path that ends with "/store-distribuerte-datamengder/" 
+base_path = get_base_path(username)
 
 #path for dataset
 dataset_path = f"{base_path}dataset/dataset/Data"

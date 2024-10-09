@@ -1,42 +1,56 @@
 import logging
 import pandas as pd
-import mysql.connector
 import sys
 import os
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from DbConnector import DbConnector
-from pandas_tables.activity_and_trackpoints import trackpoint_pandas
-# Define the path to your CSV file
-#csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
-#logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Read the CSV file into a pandas DataFrame
-#trackpoint_pandas = pd.read_csv(csv_file_path)
+#from pandas_tables.activity_and_trackpoints import trackpoint_pandas
 
-# Convert 'start_date_time' and 'end_date_time' to datetime objects
-#trackpoint_pandas['date_time'] = pd.to_datetime(trackpoint_pandas['date_time'])
-start_trackpoints = trackpoint_pandas[:200000]
-def insert_trackpoints(start_trackpoints, batch_size):
+
+def get_table_from_csv(username):
+
+    #get correct path
+    if username.lower() == 'erik':
+        csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
+    if username.lower() == 'mari':
+        csv_file_path = "/Users/marividringstad/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv" #TODO: mari sjekk at denne er riktig
+    if username.lower() == 'tine':
+        csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
+    
+    #store table in variable
+    pandas_table = pd.read_csv(csv_file_path)
+
+    #convert 'date_time'  column to string format for MySQL
+    pandas_table['date_time'] = pandas_table['date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+    return pandas_table
+
+username = input("Who is running this code?")
+
+trackpoint_pandas = get_table_from_csv(username)
+
+def insert_trackpoints(trackpoint_pandas, batch_size):
     db = None
     try:
-        db = DbConnector()  # Establish a connection to the database
+        #connect to database
+        db = DbConnector()  
         cursor = db.cursor
         
-        # Prepare the SQL insert query
+        #SQL insert query
         query = """
         INSERT INTO TrackPoint (activity_id, lat, lon, altitude, date_days, date_time)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """ #used autoincrement id
         data = []
         total_inserted = 0
         
         # Iterate over the trackpoints DataFrame and insert each trackpoint into the database
-        for index, row in start_trackpoints.iterrows():
-            print(row)
+        for row in trackpoint_pandas.iterrows():
             data.append((
-                #row['id'],
                 row['activity_id'],
                 row['lat'],
                 row['lon'],
@@ -45,6 +59,7 @@ def insert_trackpoints(start_trackpoints, batch_size):
                 row['date_time']
             ))
             
+            #write in batched
             if len(data) == batch_size:
                 cursor.executemany(query, data)
                 db.connection.commit()
@@ -52,7 +67,7 @@ def insert_trackpoints(start_trackpoints, batch_size):
                 logging.info(f"Inserted batch of {len(data)} trackpoints, total inserted: {total_inserted}")
                 data = []  # Clear the list for the next batch
 
-        # Insert remaining data (less than batch_size)
+        #last write will not fill batch
         if data:
             cursor.executemany(query, data)
             db.connection.commit()
@@ -70,4 +85,4 @@ def insert_trackpoints(start_trackpoints, batch_size):
             db.close()  # Close the database connection
     print(f"Total trackpoints inserted: {total_inserted}")
 
-insert_trackpoints(start_trackpoints, batch_size=1000)
+insert_trackpoints(trackpoint_pandas, batch_size=1000)

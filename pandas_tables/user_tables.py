@@ -1,7 +1,23 @@
 import pandas as pd
 
+def get_base_path(username):
+
+    #get correct path
+    if username.lower() == 'erik':
+        path = "/Users/eriksundstrom/store-distribuerte-datamengder/"
+    if username.lower() == 'mari':
+        path = "/Users/marividringstad/store-distribuerte-datamengder/" #TODO: mari sjekk at denne er riktig
+    if username.lower() == 'tine':
+        path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/"
+
+    return path
+
+username = input("Who is running this code?")
+
 #file path for .txt with ids for users with labels
-file_path = '/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
+base_path = get_base_path(username)
+
+file_path = f"{base_path}dataset/dataset/labeled_ids.txt"
 
 #open file and create set of users with labels
 with open(file_path, 'r') as file:
@@ -18,7 +34,7 @@ users_pandas = pd.DataFrame({
 })
 
 #path for csv file
-csv_output_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
+csv_output_path = f"{base_path}cleaned_tables/users_data.csv"
 
 
 #write dataframe to csv
