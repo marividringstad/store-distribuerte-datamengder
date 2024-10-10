@@ -16,7 +16,7 @@ def create_tables():
     create_activity_table = """
     CREATE TABLE IF NOT EXISTS Activity (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id VARCHAR(50),
+        user_id VARCHAR(50),                    
         transportation_mode VARCHAR(50),
         start_date_time DATETIME,
         end_date_time DATETIME,

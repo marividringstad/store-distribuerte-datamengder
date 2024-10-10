@@ -7,10 +7,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from DbConnector import DbConnector
 from pandas_tables.user_tables import users_pandas
-#csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
+csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
 
 # Read the CSV file into a pandas DataFrame
-#users_pandas = pd.read_csv(csv_file_path)
+users_pandas = pd.read_csv(csv_file_path)
 
 def insert_users(users_pandas):
     db = DbConnector()  # Establish a connection to the database

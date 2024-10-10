@@ -8,15 +8,17 @@ from user_tables import users_pandas
 #get user ids from user-table
 user_ids =users_pandas['id']
 
+
+
 #path that ends with "/store-distribuerte-datamengder/" --- TODO: change this so patch matches your path
-base_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/" 
+base_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/" 
 
 #path for dataset
 dataset_path = f"{base_path}dataset/dataset/Data"
 
 #counter for id for activity and trackpoints
-unique_id_activity = 0
-unique_id_trackpoints = 0
+unique_id_activity = 1
+unique_id_trackpoints = 1
 
 #parse date and time on 'YYYY/MM/DD' to '%Y-%m-%d %H:%M:%S'
 def parse_datetime(date_str, time_str):
@@ -111,11 +113,17 @@ for user_id in user_ids:
                         start_date = first_trackpoint[5]
                         start_time = first_trackpoint[6]
                         start_date_time = f"{start_date} {start_time}"
+                        
+                        #added this line because of no matches on transportation mode
+                        start_date_time = parse_datetime(start_date, start_time)
 
                         #get end date and time from last trackpoint
                         end_date = last_trackpoint[5]
                         end_time = last_trackpoint[6]
                         end_date_time = f"{end_date} {end_time}"
+                        
+                        #added this line because of no matches on transportation mode
+                        end_date_time = parse_datetime(end_date, end_time)
 
                         #default transportation mode
                         transportation_mode = 'NULL'  
@@ -140,19 +148,23 @@ for user_id in user_ids:
                                 label_end_time = parse_datetime(date_end_label, time_end_label)
                                 label_transportation_mode = label_data[4]
 
+                                
+                                
 
-                                #find exact matches in start time and labels
-                                if label_start_time in all_date_times  and label_end_time in all_date_times:
+                                
+                                #find exact matches in start time and labels 
+                                #updatated to exaact match on start and end time
+                                if label_start_time == start_date_time  and label_end_time == end_date_time:
 
                                     #update start and end time, and transportation mdoe
                                     transportation_mode = label_transportation_mode
-                                    start_date_time = label_start_time
-                                    end_date_time = label_end_time
+                                    #start_date_time = label_start_time
+                                    #end_date_time = label_end_time
 
                                     #oppdate valid trackpoints for the activity
-                                    start_time_index= all_date_times.index(label_start_time)
-                                    end_time_index= all_date_times.index(label_end_time)
-                                    trackpoints = trackpoints[start_time_index : end_time_index] #update valid trackpoints for the activity
+                                    #start_time_index= all_date_times.index(label_start_time)
+                                    #end_time_index= all_date_times.index(label_end_time)
+                                    #trackpoints = trackpoints[start_time_index : end_time_index] #update valid trackpoints for the activity
                                     break 
 
                         #create new activity as dictionary to be added into list of all activities
@@ -175,14 +187,14 @@ for user_id in user_ids:
                             lat, lon, altitude, date_days, date_time_trackpoint = get_trackponit_info(trackpoint)
 
                             #checks for data
-                            if lon not in [-180,180]:
-                                lon = 'NaN'
-                            if lat not in [-90,90]:
-                                lat = 'NaN'
-                            if altitude not in [-100, 29029]: #not higher than mt.everest
-                                altitude = 'NaN'
-                            if date_days <= 0:
-                                date_days= 'NaN'
+                            #if lon not in [-180,180]:
+                                #lon = 'NaN'
+                            #if lat not in [-90,90]:
+                                #lat = 'NaN'
+                            #if altitude not in [-100, 29029]: #not higher than mt.everest
+                                #altitude = 'NaN'
+                            #if date_days <= 0:
+                                #date_days= 'NaN'
 
                             new_trackpoint = {
                                 'id': int(unique_id_trackpoints),

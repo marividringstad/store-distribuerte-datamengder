@@ -1,7 +1,7 @@
 import pandas as pd
 
 #file path for .txt with ids for users with labels
-file_path = '/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
+file_path = '/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/dataset/dataset/labeled_ids.txt'
 
 #open file and create set of users with labels
 with open(file_path, 'r') as file:
@@ -18,10 +18,11 @@ users_pandas = pd.DataFrame({
 })
 
 #path for csv file
-csv_output_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/users_data.csv"
+csv_output_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables.csv"
 
 
 #write dataframe to csv
 users_pandas.to_csv(csv_output_path, index=False)
 
 print(f"Data successfully saved to {csv_output_path}")
+print('hei')
