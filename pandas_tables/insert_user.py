@@ -26,7 +26,7 @@ def get_table_from_csv(username):
     pandas_table = pd.read_csv(csv_file_path)
 
     #convert 'date_time'  column to string format for MySQL
-    pandas_table['date_time'] = pandas_table['date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    #pandas_table['date_time'] = pandas_table['date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     return pandas_table
 

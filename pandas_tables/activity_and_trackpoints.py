@@ -29,8 +29,8 @@ base_path = get_base_path(username)
 dataset_path = f"{base_path}dataset/dataset/Data"
 
 #counter for id for activity and trackpoints
-unique_id_activity = 0
-unique_id_trackpoints = 0
+unique_id_activity = 1
+unique_id_trackpoints = 1
 
 #parse date and time on 'YYYY/MM/DD' to '%Y-%m-%d %H:%M:%S'
 def parse_datetime(date_str, time_str):
@@ -158,15 +158,15 @@ for user_id in user_ids:
                                 #find exact matches in start time and labels
                                 if label_start_time in all_date_times  and label_end_time in all_date_times:
 
-                                    #update start and end time, and transportation mdoe
+                                    #update start and end time, and transportation mode
                                     transportation_mode = label_transportation_mode
-                                    start_date_time = label_start_time
-                                    end_date_time = label_end_time
+                                    #start_date_time = label_start_time
+                                   #end_date_time = label_end_time
 
                                     #oppdate valid trackpoints for the activity
-                                    start_time_index= all_date_times.index(label_start_time)
-                                    end_time_index= all_date_times.index(label_end_time)
-                                    trackpoints = trackpoints[start_time_index : end_time_index] #update valid trackpoints for the activity
+                                    #start_time_index= all_date_times.index(label_start_time)
+                                    #end_time_index= all_date_times.index(label_end_time)
+                                    #trackpoints = trackpoints[start_time_index : end_time_index] #update valid trackpoints for the activity
                                     break 
 
                         #create new activity as dictionary to be added into list of all activities
@@ -189,11 +189,11 @@ for user_id in user_ids:
                             lat, lon, altitude, date_days, date_time_trackpoint = get_trackponit_info(trackpoint)
 
                             #checks for data
-                            if lon not in [-180,180]:
+                            if float(lon)< -180 or float(lon)>180:
                                 lon = 'NaN'
-                            if lat not in [-90,90]:
+                            if float(lat) < -90 or float(lat)> 90:
                                 lat = 'NaN'
-                            if altitude not in [-100, 29029]: #not higher than mt.everest
+                            if float(altitude) < -130 or float(altitude) >29029: #not higher than mt.everest, also takes into account if -777
                                 altitude = 'NaN'
                             if date_days <= 0:
                                 date_days= 'NaN'

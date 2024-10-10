@@ -13,18 +13,18 @@ def get_table_from_csv(username):
 
     #get correct path
     if username.lower() == 'erik':
-        csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
+        csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/activity_final.csv"
     if username.lower() == 'mari':
-        csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
+        csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/activity_final.csv"
     if username.lower() == 'tine':
-        csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/activity_data.csv"
+        csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/activity_final.csv"
     
     #store table in variabel
     pandas_table = pd.read_csv(csv_file_path)
 
     #convert 'start_date_time' and 'end_date_time' columns to string format for MySQL
-    pandas_table['start_date_time'] = pandas_table['start_date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
-    pandas_table['end_date_time'] = pandas_table['end_date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    #pandas_table['start_date_time'] = pandas_table['start_date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    #pandas_table['end_date_time'] = pandas_table['end_date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     return pandas_table
 
@@ -50,7 +50,7 @@ def insert_activities(activity_pandas, batch_size):
         total_inserted = 0
         
         # Iterate over the users DataFrame and insert each user into the database
-        for row in activity_pandas.iterrows():
+        for index, row in activity_pandas.iterrows():
             data.append((
                 row['user_id'],
                 row['transportation_mode'],

@@ -15,17 +15,17 @@ def get_table_from_csv(username):
 
     #get correct path
     if username.lower() == 'erik':
-        csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
+        csv_file_path = "/Users/eriksundstrom/store-distribuerte-datamengder/cleaned_tables/trackpoints_final.csv"
     if username.lower() == 'mari':
-        csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
+        csv_file_path = "/Users/marividringstad/Desktop/Høst 2024/Store, distribuerte datamengder/store-distribuerte-datamengder/cleaned_tables/trackpoints_final.csv"
     if username.lower() == 'tine':
-        csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/trackpoints_data.csv"
+        csv_file_path = "/Users/tineaas-jakobsen/Desktop/Skrivebord – Tines MacBook Pro/NTNU/TDT4225 Store Distribuerte Datamengder/Assignment-2/store-distribuerte-datamengder/cleaned_tables/trackpoints_final.csv"
     
     #store table in variable
     pandas_table = pd.read_csv(csv_file_path)
 
     #convert 'date_time'  column to string format for MySQL
-    pandas_table['date_time'] = pandas_table['date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    #pandas_table['date_time'] = pandas_table['date_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
     return pandas_table
 
@@ -49,7 +49,7 @@ def insert_trackpoints(trackpoint_pandas, batch_size):
         total_inserted = 0
         
         # Iterate over the trackpoints DataFrame and insert each trackpoint into the database
-        for row in trackpoint_pandas.iterrows():
+        for index, row in trackpoint_pandas.iterrows():
             data.append((
                 row['activity_id'],
                 row['lat'],
