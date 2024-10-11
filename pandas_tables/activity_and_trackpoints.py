@@ -193,7 +193,7 @@ for user_id in user_ids:
                                 lon = 'NaN'
                             if float(lat) < -90 or float(lat)> 90:
                                 lat = 'NaN'
-                            if float(altitude) < -130 or float(altitude) >29029: #not higher than mt.everest, also takes into account if -777
+                            if float(altitude) < -130 or float(altitude) >43100: #not higher than air craft service ceiling, also takes into account if -777
                                 altitude = 'NaN'
                             if date_days <= 0:
                                 date_days= 'NaN'
